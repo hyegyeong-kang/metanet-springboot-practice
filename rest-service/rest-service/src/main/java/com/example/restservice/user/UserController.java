@@ -5,6 +5,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -32,8 +33,8 @@ public class UserController {
         return user;
     }
 
-    @PostMapping("/users")
-    public ResponseEntity createUser(@RequestBody User user) {
+    @PostMapping("/users") // valid 에서 실패나면 호출 -> handleMethodArgumentNotValid
+    public ResponseEntity createUser(@Valid @RequestBody User user) {
         User saveUser = service.save(user);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
