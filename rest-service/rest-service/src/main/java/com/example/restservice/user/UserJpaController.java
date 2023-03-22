@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.swing.text.html.Option;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +19,8 @@ public class UserJpaController {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PostRepository postRepository;
 
     @GetMapping("/users")
     public List<User> retrieveAllUsers() {
@@ -55,4 +56,35 @@ public class UserJpaController {
 
         return ResponseEntity.created(location).build();
     }
+
+    @GetMapping("/users/{id}/posts")
+    public List<Post> retrieveAllPostByUser(@PathVariable int id) {
+        Optional<User> user = userRepository.findById(id);
+
+        if(!user.isPresent()) {
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        }
+
+        return user.get().getPosts();  // 지연방식이기 때문에 이때 데이터를 불러옴
+    }
+
+    @PostMapping("/users/{id}/posts")
+    public ResponseEntity<Post> createPostforUser(@PathVariable int id, @RequestBody Post post) {
+        Optional<User> user = userRepository.findById(id);
+
+        if(!user.isPresent()) {
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        }
+
+        post.setUser(user.get());
+        Post save = postRepository.save(post);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(save.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).build();
+    }
+
 }
