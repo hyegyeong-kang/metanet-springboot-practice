@@ -27,10 +27,12 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.authorizeRequests().antMatchers("/users").permitAll(); // users 로 들어오는 애는 예외적으로 허락해줘 , 얘 말고는 로그인하도록 유도해
         http.authorizeRequests().antMatchers("/h2-console/**").permitAll();
+        http.authorizeRequests().antMatchers("/error/**").permitAll();
+        http.authorizeRequests().antMatchers("/login").permitAll();
 
 
         http.authorizeRequests().antMatchers("/**")
-                        .hasIpAddress("localhost")
+                        .hasIpAddress("127.0.0.1")
                         .and()
                         .addFilter(getApplicationFilter()); // 특정 ip 로 들어오는건 이 필터를 거치게 해라 (준비)
 
