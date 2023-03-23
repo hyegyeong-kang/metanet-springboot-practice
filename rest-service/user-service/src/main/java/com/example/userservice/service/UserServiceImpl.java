@@ -7,9 +7,13 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MatchingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -20,6 +24,20 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Override // spring security 에서 가장 중요한 메소드임
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserEntity userEntity = userRepository.findByEmail(username); // 우리 입장에서 username->email 임
+
+        if (userEntity == null) {
+            throw new UsernameNotFoundException(username + ": not found!");
+        }
+
+        return new User(userEntity.getEmail()
+                , userEntity.getEncryptedPwd(),
+                true, true, true, true,
+                new ArrayList<>()); // spring framework 에서 제공해주는 User 객체
+        // db 값은 이거인데 spring 이 알아서 비교하고 인증처리 해줌
+    }
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
@@ -47,4 +65,5 @@ public class UserServiceImpl implements UserService{
     public Iterable<UserEntity> getUserByAll() {
         return null;
     }
+
 }
