@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.restservice.user.UserMapper">
+
+    <select id="findAllUsers" resultType="User">
+        select * from users2
+    </select>
+
+    <select id="findOne" resultType="User">
+        select * from users2 where id = #{id}
+    </select>
+
+    <resultMap type="com.metanet.metakurly.domain.CartDTO" id="cartDTO">
+        <result property="m_id" column="m_id"/>
+        <result property="p_id" column="p_id"/>
+        <result property="quantity" column="quantity"/>
+        <collection property="productList" resultMap="productDTO">
+        </collection>
+    </resultMap>
+
+
+    <resultMap type="com.metanet.metakurly.domain.ProductDTO" id="productDTO">
+        <result property="p_id" column="p_id"/>
+        <result property="name" column="name"/>
+        <result property="price" column="price"/>
+        <result property="img_url" column="img_url"/>
+    </resultMap>
+
+    <insert id="save">
+        insert into users2 values (user_seq.nextval, #{name}, sysdate, #{password}, #{ssn})
+    </insert>
+
+    <delete id="deleteById">
+        delete from users2
+        where id = #{id}
+    </delete>
+    
+</mapper>
+
+
+
+
