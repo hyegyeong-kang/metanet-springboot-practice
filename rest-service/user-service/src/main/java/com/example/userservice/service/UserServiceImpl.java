@@ -37,6 +37,7 @@ public class UserServiceImpl implements UserService{
                 true, true, true, true,
                 new ArrayList<>()); // spring framework 에서 제공해주는 User 객체
         // db 값은 이거인데 spring 이 알아서 비교하고 인증처리 해줌
+        // 이메일 패스워드 같은지 알아서 비교해주는데 그래서 user 객체로 보내줘야 함
     }
 
     @Override
@@ -64,6 +65,20 @@ public class UserServiceImpl implements UserService{
     @Override
     public Iterable<UserEntity> getUserByAll() {
         return null;
+    }
+
+    @Override
+    public UserDTO getUserDetailByEmail(String userName) {
+        UserEntity userEntity = userRepository.findByEmail(userName);
+
+        if(userEntity == null) {
+            throw new UsernameNotFoundException(userName);
+        }
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        UserDTO userDTO = mapper.map(userEntity, UserDTO.class);
+        return userDTO;
     }
 
 }

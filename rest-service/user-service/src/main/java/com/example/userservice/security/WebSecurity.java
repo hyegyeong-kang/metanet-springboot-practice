@@ -32,14 +32,14 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/**")
                         .hasIpAddress("localhost")
                         .and()
-                        .addFilter(getApplicationFilter()); // 특정 ip 로 들어오는건 이 필터를 거치게 해라
+                        .addFilter(getApplicationFilter()); // 특정 ip 로 들어오는건 이 필터를 거치게 해라 (준비)
 
         http.headers().frameOptions().disable();
 
     }
 
     private AuthenticationFilter getApplicationFilter() throws Exception {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager());
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager(), userService, env);
 
         return authenticationFilter;
     }
